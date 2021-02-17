@@ -30,7 +30,7 @@ Svarīgs precizēt, kas "**1C:Uzņēmums**" tehnoloģiska platforma ir sarežģ�
 ## Uzstādīšanas instrukcijas
 Nepieciešamas programmas un platformas:
 + **1C:Uzņēmums 8.3** tievs/resns klients, failu/klient-servera sistēma, pilna vai mēģinājuma versija. [Platformas instalēšanas instrukcija](https://programmist1s.ru/kak-ustanovit-1s-buhgalteriyu-i-drugie-konfiguratsii-kak-postavit-1s/)
-+ Mana kondigurācija "RVTMacProcParvaldesSistema.cf"
++ Mana kondigurācija "RVTMacProcParvaldesSistema.cf" vai informatīva bāze "RVTMacProcParvaldesSistema.dt"
 
 Instrukcija:
 + Atvērt 1C:Uzņemums
@@ -42,4 +42,4 @@ Instrukcija:
 + Uzspiest uz spiedpogu "Готово"
 + Palaist informatīvu bāzi ar spiedpogas "Конфигуратор" palīdzību
 + "Конфигурация" -> "Открыть конфигурацию"
-+ "Конфигурация" -> "Загрузить конфигурацию из файла" un izvelēt failu RVTMacProcParvaldesSistema.cf 
++ "Администрирование" -> "Загрузить информационную базу" un izvelēt failu RVTMacProcParvaldesSistema.dt
