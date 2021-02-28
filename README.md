@@ -4,7 +4,7 @@
 Šis ir PIKC "Rīgas Valsts tehnikums" kvalifikācijas darbs, mācību procesa pārvaldes sistēma priekš Rīgas Valsts Tēhnikuma. Projekta mērķis - noveidot kopēju pārvaldes sistēmu, kas ir ieslodzīta speciāli priekš RVT, ar sekojošo funkcionalitati: 
 + Skolnieku, priekšmetu, skolotāju un klašu sarakstu pārziņa.
 + Saraksta salikšana.
-+ Svarīgus notikumos, tadus kā skolnieku izņēmums un pārvedums, skolotāju paņēmiens uz darbu, mācību stundu grāmatošana un t.t., registrācija ar dokumentiem.
++ Svarīgus notikumos, tadus kā skolnieku izņēmums un pārvedums, skolotāju un citu darbnieku paņēmiens uz darbu/atlaišana, mācību stundu grāmatošana un t.t., registrācija ar dokumentiem.
 + Svarīgas informācijas saņemšana un analīze, tādu kā novērtējumi, apciemojumi, vidēju balli u t.t.
 + Stipendijas aprēķins
 
