@@ -26,20 +26,3 @@ Svarīgs precizēt, kas "**1C:Uzņēmums**" tehnoloģiska platforma ir sarežģ�
   + [helpme1c.ru](https://helpme1c.ru/)
   + [1c-programmer-blog.ru](https://1c-programmer-blog.ru/)
 + [MySQL](https://dev.mysql.com/) - visa vajadzīga informācija par dārbu ar MySQL
-
-## Uzstādīšanas instrukcijas
-Nepieciešamas programmas un platformas:
-+ **1C:Uzņēmums 8.3** tievs/resns klients, failu/klient-servera sistēma, pilna vai mēģinājuma versija. [Platformas instalēšanas instrukcija](https://programmist1s.ru/kak-ustanovit-1s-buhgalteriyu-i-drugie-konfiguratsii-kak-postavit-1s/)
-+ Mana kondigurācija "RVTMacProcParvaldesSistema.cf" vai informatīva bāze "RVTMacProcParvaldesSistema.dt"
-
-Instrukcija:
-+ Atvērt 1C:Uzņemums
-+ Uzspiest uz spiedpogu "Добавить"
-+ Izvelēt "Создание новой информационной базы"
-+ Izvelēt "Создание информационной базы без конфигурации"
-+ Uzrakstit vajadzigo nosaukumu un izvelēt "На данном компьютере"
-+ Norādīt vēlamo katalogu un izvēlēt valodu
-+ Uzspiest uz spiedpogu "Готово"
-+ Palaist informatīvu bāzi ar spiedpogas "Конфигуратор" palīdzību
-+ "Конфигурация" -> "Открыть конфигурацию"
-+ "Администрирование" -> "Загрузить информационную базу" un izvelēt failu RVTMacProcParvaldesSistema.dt
