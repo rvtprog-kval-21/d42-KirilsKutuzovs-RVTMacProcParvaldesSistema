@@ -4,7 +4,7 @@
 + Ieejiet uz saitu https://online.1c.ru/catalog/free/28765768/
 + Izvēlaties "Получить продукт бесплатно", aizpildiet anketu, obligāti ievediet stradajoso E-mail, fails bus sutits uz vinu.
 + Piekraujiet arhīvu, izsaiņojiet, palaidiet Setup.exe
-+ Uzstādīšanas uzskaņošanās, nodalījumā "Интерфейсы на различных языках" atrodiet "Латышский" un izvelaties "Данный компанент будет установле на локальтый жеский диск" 
++ Uzstādīšanas uzskaņošanās, nodalījumā "Интерфейсы на различных языках" atrodiet "Латышский" un izvelaties "Данный компонент будет установлен на локальтый жеский диск" 
 + Nākamajā nodalījumā izvelaties "Латышский", pavadiet uzstādīšanu
 Tagad jūs uzstādījāt uz datoru 1с:Uznemums mēģinājuma versiju.
 
