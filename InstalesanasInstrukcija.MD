@@ -20,7 +20,8 @@ Jums ir nepieciesams noladiet manu informacijas bazi failu (Instalesanas fails)!
 
 Tagad jums ir instalēta mana programma. "Administratora" lietotājam ir visas tiesības.  
 Režīmā "Konfigurators" jus varat redzet visus objektus, arhitektūru un programmas kodu.  
-Konfiguracija -> Atvert konfiguraciju, Konfiguracija -> Konfiguracijas logs lai redzet metadatu koku  
+Konfiguracija -> Atvert konfiguraciju, Konfiguracija -> Konfiguracijas logs lai redzet metadatu koku
+
 **Lai redzet kodu izvelaties vajadzigo objektu:**
 + Labā peles poga -> Atvers objekta moduli - objekta modulis
 + Dubultkliks -> Formas -> Dubultkliks uz vajadzigo formu -> Modulis - formas modulis
