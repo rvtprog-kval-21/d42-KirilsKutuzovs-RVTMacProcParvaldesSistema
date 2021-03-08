@@ -9,7 +9,7 @@
 Tagad jūs uzstādījāt uz datoru 1с:Uznemums mēģinājuma versiju.
 
 ## Informatīvas bāzes uzstādīšana
-Jums ir nepieciesams noladiet manu informacijas bazi failu (Instalesanas fails)!
+Jums ir nepieciesams noladiet manu informacijas bazi failu (1Cv8.dt)!
 
 + Pie pirmās 1с palaišanas jums piedāvās radīt jaunu informatīvu bāzi, piekrītiet. Ja nepiedāvājuši, uzspiediet uz "Pievienot"
 + Izvelaties "Izveidot jaunu informacijas bazi", izvēlaties "Izveidot informacijas bazi bez konfiguracijas"
