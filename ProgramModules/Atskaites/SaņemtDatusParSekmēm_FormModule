@@ -1,0 +1,56 @@
+// Language - Built-in programming language 1C: Enterprise
+
+&НаСервере
+Процедура ОбработкаПроверкиЗаполненияНаСервере(Отказ, ПроверяемыеРеквизиты)
+	
+	Если Отчет.PeriodaSākums >= Отчет.PeriodaBeigums Тогда
+	
+		Сообщить("Perioda parametri ir nepareizi!");
+		Отказ = Истина;
+	
+	КонецЕсли; 
+	
+КонецПроцедуры
+
+&НаКлиенте
+Процедура KonkrētsMācībuPriekšmetsПриИзменении(Элемент)
+	
+	Если Отчет.KonkrētsMācībuPriekšmets Тогда
+	
+		Элементы.MācībuPriekšmets.Видимость = Истина;
+		
+	Иначе 
+		
+		Элементы.MācībuPriekšmets.Видимость = Ложь;
+	
+	КонецЕсли; 
+	
+КонецПроцедуры
+
+
+&НаСервере
+Процедура AtzimesVaiKavejumiПриИзмененииНаСервере()
+	
+	Если Отчет.AtzimesVaiKavejumi = Перечисления.KavVaiAtzim.Atzimes Тогда
+	
+		Элементы.AtzimesVaiVidejoBalli.Видимость = Истина;
+		
+	Иначе 
+		
+		Элементы.AtzimesVaiVidejoBalli.Видимость = Ложь;
+	
+	КонецЕсли; 	
+	
+КонецПроцедуры
+
+&НаКлиенте
+Процедура AtzimesVaiKavejumiПриИзменении(Элемент)
+	AtzimesVaiKavejumiПриИзмененииНаСервере();
+КонецПроцедуры
+
+&НаКлиенте
+Процедура ПриОткрытии(Отказ)
+	
+	Отчет.PeriodaBeigums = ТекущаяДата();
+	
+КонецПроцедуры
