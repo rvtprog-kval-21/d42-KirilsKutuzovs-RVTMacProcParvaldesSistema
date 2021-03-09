@@ -1,1 +1,225 @@
+// Language - Built-in programming language 1C: Enterprise
 
+Процедура ПриКомпоновкеРезультата(ДокументРезультат, ДанныеРасшифровки, СтандартнаяОбработка)
+	
+	СтандартнаяОбработка = Ложь;
+	
+	Если AtzimesVaiKavejumi = Перечисления.KavVaiAtzim.Kavejumi Тогда
+	
+		Если KonkrētsMācībuPriekšmets = Ложь ИЛИ MācībuPriekšmets = Справочники.MacibuPrieksmeti.ПустаяСсылка() Тогда
+			
+			Запрос = Новый Запрос;
+			Запрос.Текст =
+			"ВЫБРАТЬ
+			|	KavejumuRegistrs.Prieksmets КАК Prieksmets,
+			|	KavejumuRegistrs.Datums КАК Datums,
+			|	KavejumuRegistrs.StundasNumurs КАК StundasNumurs,
+			|	KavejumuRegistrs.Kavejums КАК Kavejums
+			|ИЗ
+			|	РегистрСведений.KavejumuRegistrs КАК KavejumuRegistrs
+			|ГДЕ
+			|	KavejumuRegistrs.Datums >= &SakumaDatums
+			|	И KavejumuRegistrs.Datums <= &BeigumaDatums
+			|	И KavejumuRegistrs.Students = &Students
+			|
+			|УПОРЯДОЧИТЬ ПО
+			|	Prieksmets,
+			|	Datums,
+			|	StundasNumurs";
+			
+			Запрос.УстановитьПараметр("SakumaDatums", PeriodaSākums);
+			Запрос.УстановитьПараметр("BeigumaDatums", PeriodaBeigums);
+			Запрос.УстановитьПараметр("Students", Students);
+			
+			РезультатЗапроса = Запрос.Выполнить();
+			
+		ИначеЕсли KonkrētsMācībuPriekšmets = истина И MācībuPriekšmets <> Справочники.MacibuPrieksmeti.ПустаяСсылка() Тогда
+			
+			Запрос = Новый Запрос;
+			Запрос.Текст =
+			"ВЫБРАТЬ
+			|	KavejumuRegistrs.Prieksmets КАК Prieksmets,
+			|	KavejumuRegistrs.Datums КАК Datums,
+			|	KavejumuRegistrs.StundasNumurs КАК StundasNumurs,
+			|	KavejumuRegistrs.Kavejums КАК Kavejums
+			|ИЗ
+			|	РегистрСведений.KavejumuRegistrs КАК KavejumuRegistrs
+			|ГДЕ
+			|	KavejumuRegistrs.Datums >= &SakumaDatums
+			|	И KavejumuRegistrs.Datums <= &BeigumaDatums
+			|	И KavejumuRegistrs.Prieksmets = &Prieksmets
+			|	И KavejumuRegistrs.Students = &Students
+			|
+			|УПОРЯДОЧИТЬ ПО
+			|	Prieksmets,
+			|	Datums,
+			|	StundasNumurs";
+			
+			Запрос.УстановитьПараметр("SakumaDatums", PeriodaSākums);
+			Запрос.УстановитьПараметр("BeigumaDatums", PeriodaBeigums);
+			Запрос.УстановитьПараметр("Prieksmets", MācībuPriekšmets);
+			Запрос.УстановитьПараметр("Students", Students);
+			
+			РезультатЗапроса = Запрос.Выполнить();
+			
+		КонецЕсли; 
+		
+		ДокументРезультат.АвтоМасштаб = Истина;
+		Макет = ПолучитьОбщийМакет("МакетВыводаВОтчет");
+		ОбластьШапка = Макет.ПолучитьОбласть("Шапка");
+		ОбластьСтрока = Макет.ПолучитьОбласть("Строка");
+		
+		ДокументРезультат.Вывести(ОбластьШапка);
+		
+		Выборка = РезультатЗапроса.Выбрать();
+		
+		Kavejumi = 0;
+		AtKavejumi = 0;
+		Пока Выборка.Следующий() Цикл
+			
+			Kavejumi = Kavejumi + 1;
+			ОбластьСтрока.Параметры.Prieksmets = Выборка.Prieksmets;
+			ОбластьСтрока.Параметры.Datums = Выборка.Datums;
+			ОбластьСтрока.Параметры.StNr = Выборка.StundasNumurs;
+			ОбластьСтрока.Параметры.Atzime = ?(Выборка.Kavejums, "Attaisnots", "Neattaisnots");
+			AtKavejumi = AtKavejumi + ?(ОбластьСтрока.Параметры.Atzime = "Attaisnots", 1, 0);
+			ДокументРезультат.Вывести(ОбластьСтрока);
+			
+		КонецЦикла; 
+		
+		ОбластьПодвал = Макет.ПолучитьОбласть("Подвал");
+		ОбластьПодвал.Параметры.kav = Kavejumi;
+		ОбластьПодвал.Параметры.AtKav = AtKavejumi;
+		ДокументРезультат.Вывести(ОбластьПодвал);	
+		
+	ИначеЕсли AtzimesVaiKavejumi = Перечисления.KavVaiAtzim.Atzimes Тогда 
+		
+		Если KonkrētsMācībuPriekšmets = Ложь ИЛИ MācībuPriekšmets = Справочники.MacibuPrieksmeti.ПустаяСсылка() Тогда
+			
+			Запрос = Новый Запрос;
+			Запрос.Текст =
+			"ВЫБРАТЬ
+			|	VērtējumuRegistrs.Prieksmets КАК Prieksmets,
+			|	VērtējumuRegistrs.Datums КАК Datums,
+			|	VērtējumuRegistrs.StundasNumurs КАК StundasNumurs,
+			|	VērtējumuRegistrs.Vertejums КАК Vertejums
+			|ИЗ
+			|	РегистрСведений.VērtējumuRegistrs КАК VērtējumuRegistrs
+			|ГДЕ
+			|	VērtējumuRegistrs.Datums >= &SakumaDatums
+			|	И VērtējumuRegistrs.Datums <= &BeigumaDatums
+			|	И VērtējumuRegistrs.Students = &Students
+			|
+			|УПОРЯДОЧИТЬ ПО
+			|	Prieksmets,
+			|	Datums,
+			|	StundasNumurs";
+			
+			Запрос.УстановитьПараметр("SakumaDatums", PeriodaSākums);
+			Запрос.УстановитьПараметр("BeigumaDatums", PeriodaBeigums);
+			Запрос.УстановитьПараметр("Students", Students);
+			
+			РезультатЗапроса = Запрос.Выполнить();
+			
+		ИначеЕсли KonkrētsMācībuPriekšmets = истина И MācībuPriekšmets <> Справочники.MacibuPrieksmeti.ПустаяСсылка() Тогда
+			
+			Запрос = Новый Запрос;
+			Запрос.Текст =
+			"ВЫБРАТЬ
+			|	VērtējumuRegistrs.Prieksmets КАК Prieksmets,
+			|	VērtējumuRegistrs.Datums КАК Datums,
+			|	VērtējumuRegistrs.StundasNumurs КАК StundasNumurs,
+			|	VērtējumuRegistrs.Vertejums КАК Vertejums
+			|ИЗ
+			|	РегистрСведений.VērtējumuRegistrs КАК VērtējumuRegistrs
+			|ГДЕ
+			|	VērtējumuRegistrs.Datums >= &SakumaDatums
+			|	И VērtējumuRegistrs.Datums <= &BeigumaDatums
+			|	И VērtējumuRegistrs.Prieksmets = &Prieksmets
+			|	И VērtējumuRegistrs.Students = &Students
+			|
+			|УПОРЯДОЧИТЬ ПО
+			|	Prieksmets,
+			|	Datums,
+			|	StundasNumurs";
+			
+			Запрос.УстановитьПараметр("SakumaDatums", PeriodaSākums);
+			Запрос.УстановитьПараметр("BeigumaDatums", PeriodaBeigums);
+			Запрос.УстановитьПараметр("Prieksmets", MācībuPriekšmets);
+			Запрос.УстановитьПараметр("Students", Students);
+			
+			РезультатЗапроса = Запрос.Выполнить();
+			
+		КонецЕсли;
+		
+		Если AtzimesVaiVidejoBalli = Перечисления.KoGribSanemt.AtzimesParPeriodu ИЛИ AtzimesVaiVidejoBalli = Перечисления.KoGribSanemt.ПустаяСсылка() Тогда
+		
+			ДокументРезультат.АвтоМасштаб = Истина;
+			Макет = ПолучитьОбщийМакет("МакетВыводаВОтчет");
+			ОбластьШапка = Макет.ПолучитьОбласть("Шапка");
+			ОбластьСтрока = Макет.ПолучитьОбласть("Строка");
+			
+			ДокументРезультат.Вывести(ОбластьШапка);
+			
+			Выборка = РезультатЗапроса.Выбрать();
+			
+			Пока Выборка.Следующий() Цикл
+				
+				ОбластьСтрока.Параметры.Prieksmets = Выборка.Prieksmets;
+				ОбластьСтрока.Параметры.Datums = Выборка.Datums;
+				ОбластьСтрока.Параметры.StNr = Выборка.StundasNumurs;
+				ОбластьСтрока.Параметры.Atzime = Выборка.Vertejums;
+				ДокументРезультат.Вывести(ОбластьСтрока);
+				
+			КонецЦикла;	
+		
+		ИначеЕсли AtzimesVaiVidejoBalli = Перечисления.KoGribSanemt.PeriodaVidējāAtzīme Тогда
+			
+			ДокументРезультат.АвтоМасштаб = Истина;
+			Макет = ПолучитьОбщийМакет("МакетВыводаВОтчетСредний");
+			ОбластьШапка = Макет.ПолучитьОбласть("Шапка");
+			ОбластьСтрока = Макет.ПолучитьОбласть("Строка");	
+			
+			ДокументРезультат.Вывести(ОбластьШапка);
+			
+			Выборка = РезультатЗапроса.Выбрать();
+			
+			Если Выборка.Следующий() Тогда
+			
+				ОбластьСтрока.Параметры.Prieksmets = Выборка.Prieksmets;	
+				Summa = Выборка.Vertejums;;
+				AtzimesSk = 1;
+				
+			КонецЕсли;
+			
+			
+			Пока Выборка.Следующий() Цикл
+				
+				Если ОбластьСтрока.Параметры.Prieksmets = Выборка.Prieksmets Тогда
+				
+					Summa = Summa + Выборка.Vertejums;
+					AtzimesSk = AtzimesSk + 1;
+				
+				ИначеЕсли ОбластьСтрока.Параметры.Prieksmets <> Выборка.Prieksmets Тогда
+				
+					ОбластьСтрока.Параметры.VidAtzim = Summa / AtzimesSk;
+					
+					ДокументРезультат.Вывести(ОбластьСтрока);
+					ОбластьСтрока.Параметры.Prieksmets = Выборка.Prieksmets;
+					Summa = Выборка.Vertejums;
+					AtzimesSk = 1;
+				
+				КонецЕсли; 
+				
+			КонецЦикла;
+						
+			ОбластьСтрока.Параметры.VidAtzim = Summa / AtzimesSk;
+			ДокументРезультат.Вывести(ОбластьСтрока);
+			
+		КонецЕсли;
+				
+		
+	КонецЕсли;  
+	
+	
+КонецПроцедуры
