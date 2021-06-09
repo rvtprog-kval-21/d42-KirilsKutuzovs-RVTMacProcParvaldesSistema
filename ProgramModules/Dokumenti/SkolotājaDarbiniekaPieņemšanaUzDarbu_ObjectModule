@@ -1,0 +1,33 @@
+Процедура ОбработкаПроведения(Отказ, РежимПроведения)
+	
+	Если SubjectaTips = Перечисления.SubjektaTipi.Skolotajs Тогда
+		
+		JaunsSkolotajs = Справочники.Skolotaji.СоздатьЭлемент();
+		JaunsSkolotajs.Наименование = Vards + " " + Uzvards;
+		JaunsSkolotajs.DzimsanasDate = DzimsanasDate;
+		JaunsSkolotajs.Dzimte = Dzimte;
+		
+		Для каждого Prieksmets Из MācībuPriekšmetsUnKabinets Цикл
+			
+			SkolotajaPrieks = JaunsSkolotajs.MacPrieksKasVed.Добавить();
+			SkolotajaPrieks.Prieksmets = Prieksmets.MācībuPriekšmets;
+			SkolotajaPrieks.KabinetaNumurs = Prieksmets.Kabinets;
+			
+		КонецЦикла;
+		
+		JaunsSkolotajs.Записать();	
+		
+	ИначеЕсли SubjectaTips = Перечисления.SubjektaTipi.Darbinieks Тогда
+		
+		JaunsDarbinieks = Справочники.DarbaPersonals.СоздатьЭлемент();
+		JaunsDarbinieks.Наименование = Vards + " " + Uzvards;
+		JaunsDarbinieks.DzimsanasDate = DzimsanasDate;
+		JaunsDarbinieks.Dzimte = Dzimte;
+		JaunsDarbinieks.PienemsanaDatums = Дата;
+		JaunsDarbinieks.Amats = Amats;
+		
+		JaunsDarbinieks.Записать();
+		
+	КонецЕсли;
+	
+КонецПроцедуры
