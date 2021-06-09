@@ -1,0 +1,32 @@
+Процедура ОбработкаПроведения(Отказ, РежимПроведения)
+	
+	VardsUzvards = Vards + " " + Uzvards;
+	
+	JaunsStudents = Справочники.Studenti.СоздатьЭлемент();
+	JaunsStudents.Наименование = VardsUzvards;
+	JaunsStudents.Dzimte = Dzimte;
+	JaunsStudents.DzimsanasDate = DzimsanasDate;
+	JaunsStudents.Grupa = Grupa;
+	JaunsStudents.GrupasVadītājs = Grupa.GrupasVadītājs;
+	JaunsStudents.Записать();
+	
+	СсылкаНаСтудента = Справочники.Studenti.НайтиПоНаименованию(VardsUzvards);
+	
+	JaunsStudents = Справочники.Grupas.НайтиПоНаименованию(Grupa);
+	
+	Если JaunsStudents.Studenti.Найти(СсылкаНаСтудента, "VardsUzvards") = Неопределено Тогда
+	
+		JaunsStudents = JaunsStudents.ПолучитьОбъект();
+		JaunaStudentaDati = JaunsStudents.Studenti.Добавить();
+		JaunaStudentaDati.VardsUzvards = СсылкаНаСтудента;
+		JaunsStudents.Записать();
+	
+	КонецЕсли;
+	
+	МенеджерЗаписи = РегистрыСведений.IeskaitītiUzApmācību.СоздатьМенеджерЗаписи();
+	МенеджерЗаписи.Datums = Дата;
+	МенеджерЗаписи.VardsUzvards = VardsUzvards;
+	МенеджерЗаписи.SakumaMacibuGads = MacibuGads;
+	МенеджерЗаписи.Записать();
+	                      
+КонецПроцедуры 
