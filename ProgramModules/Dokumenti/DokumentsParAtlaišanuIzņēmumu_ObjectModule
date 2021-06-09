@@ -1,0 +1,117 @@
+Процедура ОбработкаПроведения(Отказ, РежимПроведения)
+	
+	Если SubjectaTips = Перечисления.SubjektaTipi.Darbinieks Тогда
+		
+		Subjekts = Справочники.DarbaPersonals.НайтиПоНаименованию(VardsUzvards);
+		
+		Если Subjekts = Справочники.DarbaPersonals.ПустаяСсылка() Тогда
+			
+			Запись = РегистрыСведений.AtbrīvotieUnIzslēgti.СоздатьМенеджерЗаписи();
+			Запись.Datums = Дата;
+			Запись.SubjektaTips = SubjectaTips;
+			Запись.VardsUzvards = VardsUzvards;
+			Запись.Cēlonis = AtlaišanasСēlonis;
+			
+			Запись.Записать();		
+			
+		Иначе
+			
+			Subjekts.ПолучитьОбъект().Удалить();
+			
+			Запись = РегистрыСведений.AtbrīvotieUnIzslēgti.СоздатьМенеджерЗаписи();
+			Запись.Datums = Дата;
+			Запись.SubjektaTips = SubjectaTips;
+			Запись.VardsUzvards = VardsUzvards;
+			Запись.Cēlonis = AtlaišanasСēlonis;
+			
+			Запись.Записать();
+			
+		КонецЕсли; 
+		
+	ИначеЕсли SubjectaTips = Перечисления.SubjektaTipi.Students Тогда
+		
+		Subjekts = Справочники.Studenti.НайтиПоНаименованию(VardsUzvards);
+		
+		Если Subjekts = Справочники.Studenti.ПустаяСсылка() Тогда
+			
+			Запись = РегистрыСведений.AtbrīvotieUnIzslēgti.СоздатьМенеджерЗаписи();
+			Запись.Datums = Дата;
+			Запись.SubjektaTips = SubjectaTips;
+			Запись.VardsUzvards = VardsUzvards;
+			Запись.Cēlonis = AtlaišanasСēlonis;
+			
+			Запись.Записать();		
+			
+		Иначе
+			
+			MusuGrupa = Справочники.Grupas.НайтиПоНаименованию(Students.Grupa).ПолучитьОбъект();
+			ИскомаяСтрока = MusuGrupa.Studenti.Найти(Students,"VardsUzvards");
+			MusuGrupa.Studenti.Удалить(ИскомаяСтрока);
+			MusuGrupa.Записать();
+			
+			НаборЗаписейОценки = РегистрыСведений.VērtējumuRegistrs.СоздатьНаборЗаписей();
+			НаборЗаписейПрогулы = РегистрыСведений.KavejumuRegistrs.СоздатьНаборЗаписей();
+			НаборЗаписейОценки.Отбор.Students.Установить(Students);
+			НаборЗаписейПрогулы.Отбор.Students.Установить(Students);
+			НаборЗаписейОценки.Записать(Истина);
+			НаборЗаписейПрогулы.Записать(Истина);
+			
+			Subjekts.ПолучитьОбъект().Удалить();
+			
+			Запись = РегистрыСведений.AtbrīvotieUnIzslēgti.СоздатьМенеджерЗаписи();
+			Запись.Datums = Дата;
+			Запись.SubjektaTips = SubjectaTips;
+			Запись.VardsUzvards = VardsUzvards;
+			Запись.Cēlonis = AtlaišanasСēlonis;
+			
+			Запись.Записать();
+			
+		КонецЕсли;	
+		
+	ИначеЕсли SubjectaTips = Перечисления.SubjektaTipi.Skolotajs Тогда
+		
+		Subjekts = Справочники.Skolotaji.НайтиПоНаименованию(VardsUzvards);
+		
+		Если Subjekts = Справочники.Skolotaji.ПустаяСсылка() Тогда
+			
+			Запись = РегистрыСведений.AtbrīvotieUnIzslēgti.СоздатьМенеджерЗаписи();
+			Запись.Datums = Дата;
+			Запись.SubjektaTips = SubjectaTips;
+			Запись.VardsUzvards = VardsUzvards;
+			Запись.Cēlonis = AtlaišanasСēlonis;
+			
+			Запись.Записать();		
+			
+		Иначе
+			
+			Если AizstāšanaGrupVad <> Справочники.Skolotaji.ПустаяСсылка() Тогда
+			
+				VajadzigsObjekts = Справочники.Grupas.НайтиПоРеквизиту("GrupasVadītājs", Skolotajs).ПолучитьОбъект();
+				VajadzigsObjekts.GrupasVadītājs = AizstāšanaGrupVad;
+				VajadzigsObjekts.Записать();
+			
+			КонецЕсли;
+			
+			Если AizstāšanaNodVad <> Справочники.Skolotaji.ПустаяСсылка() Тогда
+			
+				VajadzigsObjekts = Справочники.Nodalas.НайтиПоРеквизиту("NodalasVaditajs", Skolotajs).ПолучитьОбъект();
+				VajadzigsObjekts.NodalasVaditajs = AizstāšanaNodVad;
+				VajadzigsObjekts.Записать();		
+			
+			КонецЕсли;
+			
+			Subjekts.ПолучитьОбъект().Удалить();
+						
+			Запись = РегистрыСведений.AtbrīvotieUnIzslēgti.СоздатьМенеджерЗаписи();
+			Запись.Datums = Дата;
+			Запись.SubjektaTips = SubjectaTips;
+			Запись.VardsUzvards = VardsUzvards;
+			Запись.Cēlonis = AtlaišanasСēlonis;
+			
+			Запись.Записать();
+			
+		КонецЕсли;		
+		
+	КонецЕсли;		
+	
+КонецПроцедуры
