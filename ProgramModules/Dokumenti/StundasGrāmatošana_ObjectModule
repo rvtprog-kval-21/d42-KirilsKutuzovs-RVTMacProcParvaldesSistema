@@ -1,0 +1,153 @@
+Процедура ОбработкаПроведения(Отказ, РежимПроведения)
+	
+	Для каждого Students Из Studenti Цикл
+		
+		Если Students.Atzime <> Перечисления.Atzimes.ПустаяСсылка() Тогда
+		
+			Запись = РегистрыСведений.VērtējumuRegistrs.СоздатьМенеджерЗаписи();
+			
+			Запись.Datums = Datums;
+			Запись.Students = Students.VardsUzvards;
+			Запись.Prieksmets = Prieksmets;
+			Запись.StundasNumurs = StundasNumurs;
+				
+				Если Students.Atzime = Перечисления.Atzimes.NV Тогда
+				
+					Запись.Vertejums = 0;	
+				
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Viens Тогда
+					
+					Запись.Vertejums = 1;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Divi Тогда
+					
+					Запись.Vertejums = 2;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Tris Тогда
+					
+					Запись.Vertejums = 3;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Četri Тогда
+					
+					Запись.Vertejums = 4;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Pieci Тогда
+					
+					Запись.Vertejums = 5;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Seši Тогда
+					
+					Запись.Vertejums = 6;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Septiņi Тогда
+					
+					Запись.Vertejums = 7;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Astoņi Тогда
+					
+					Запись.Vertejums = 8;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Deviņi Тогда
+					
+					Запись.Vertejums = 9;
+					
+				ИначеЕсли Students.Atzime = Перечисления.Atzimes.Desmit Тогда
+					
+					Запись.Vertejums = 10;
+				
+				КонецЕсли;
+				
+			Запись.Записать();
+			
+		ИначеЕсли Students.Atzime = Перечисления.Atzimes.ПустаяСсылка() Тогда
+			
+			Запрос = Новый Запрос;
+			Запрос.Текст = 
+			"ВЫБРАТЬ
+			|	VērtējumuRegistrs.Vertejums КАК Vertejums
+			|ИЗ
+			|	РегистрСведений.VērtējumuRegistrs КАК VērtējumuRegistrs
+			|ГДЕ
+			|	VērtējumuRegistrs.Datums = &Datums
+			|	И VērtējumuRegistrs.Students = &Students
+			|	И VērtējumuRegistrs.Prieksmets = &Prieksmets
+			|	И VērtējumuRegistrs.StundasNumurs = &StundasNumurs";
+			
+			Запрос.УстановитьПараметр("Datums", Datums);
+			Запрос.УстановитьПараметр("Prieksmets", Prieksmets);
+			Запрос.УстановитьПараметр("Students", Students.VardsUzvards);
+			Запрос.УстановитьПараметр("StundasNumurs", StundasNumurs);
+			
+			РезультатЗапроса = Запрос.Выполнить();
+			
+			Если НЕ РезультатЗапроса.Пустой() Тогда
+				
+				УдалитьОценку = РегистрыСведений.VērtējumuRegistrs.СоздатьНаборЗаписей();
+				УдалитьОценку.Отбор.Datums.Установить(Datums);
+				УдалитьОценку.Отбор.Students.Установить(Students.VardsUzvards);
+				УдалитьОценку.Отбор.Prieksmets.Установить(Prieksmets);
+				УдалитьОценку.Отбор.StundasNumurs.Установить(StundasNumurs);
+				УдалитьОценку.Записать(Истина);
+			
+			КонецЕсли; 	
+			
+		КонецЕсли; 
+		
+		Если Students.Kavejums = Истина ИЛИ Students.AttaisnotaisKavējums = Истина Тогда
+		
+			Запись = РегистрыСведений.KavejumuRegistrs.СоздатьМенеджерЗаписи();
+			
+			Запись.Datums = Datums;
+			Запись.Students = Students.VardsUzvards;
+			Запись.Prieksmets = Prieksmets;
+			Запись.StundasNumurs = StundasNumurs;
+			
+			Если Students.Kavejums = Истина Тогда
+			
+				Запись.Kavejums = Ложь;	
+			
+			ИначеЕсли Students.AttaisnotaisKavējums = Истина Тогда
+			
+				Запись.Kavejums = Истина;	
+			
+			КонецЕсли;
+			
+			Запись.Записать();
+			
+		ИначеЕсли Students.Kavejums = Ложь И Students.AttaisnotaisKavējums = Ложь Тогда
+			
+			Запрос = Новый Запрос;
+			Запрос.Текст =
+			"ВЫБРАТЬ
+			|	KavejumuRegistrs.Kavejums КАК Kavejums
+			|ИЗ
+			|	РегистрСведений.KavejumuRegistrs КАК KavejumuRegistrs
+			|ГДЕ
+			|	KavejumuRegistrs.Datums = &Datums
+			|	И KavejumuRegistrs.Students = &Students
+			|	И KavejumuRegistrs.Prieksmets = &Prieksmets
+			|	И KavejumuRegistrs.StundasNumurs = &StundasNumurs";
+			
+			Запрос.УстановитьПараметр("Datums", Datums);
+			Запрос.УстановитьПараметр("Prieksmets", Prieksmets);
+			Запрос.УстановитьПараметр("Students", Students.VardsUzvards);
+			Запрос.УстановитьПараметр("StundasNumurs", StundasNumurs);
+			
+			РезультатЗапроса = Запрос.Выполнить();
+			
+			Если НЕ РезультатЗапроса.Пустой() Тогда
+				
+				УдалитьПрогул = РегистрыСведений.KavejumuRegistrs.СоздатьНаборЗаписей();
+				УдалитьПрогул.Отбор.Datums.Установить(Datums);
+				УдалитьПрогул.Отбор.Students.Установить(Students.VardsUzvards);
+				УдалитьПрогул.Отбор.Prieksmets.Установить(Prieksmets);
+				УдалитьПрогул.Отбор.StundasNumurs.Установить(StundasNumurs);
+				УдалитьПрогул.Записать(Истина);
+			
+			КонецЕсли;
+		
+		КонецЕсли; 
+	
+	КонецЦикла; 	
+	
+КонецПроцедуры
