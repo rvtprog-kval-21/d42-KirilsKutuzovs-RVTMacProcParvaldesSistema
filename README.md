@@ -6,7 +6,6 @@
 + Saraksta salikšana.
 + Svarīgus notikumos, tadus kā skolnieku izņēmums un pārvedums, skolotāju un citu darbnieku paņēmiens uz darbu/atlaišana, mācību stundu grāmatošana un t.t., registrācija ar dokumentiem.
 + Svarīgas informācijas saņemšana un analīze, tādu kā novērtējumi, apciemojumi, vidēju balli u t.t.
-+ Stipendijas aprēķins
 
 Funkcionalitāte būs sadalīta pa lomām.
 
