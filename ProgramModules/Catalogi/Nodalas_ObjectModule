@@ -1,0 +1,40 @@
+Процедура ПриЗаписи(Отказ)
+		
+	Для каждого Grupa Из Grupas Цикл
+		
+		grupasDati = Справочники.Grupas.НайтиПоНаименованию(Grupa.Grupa).ПолучитьОбъект();
+		MacGads = Справочники.Grupas.НайтиПоНаименованию(Grupa.Grupa).MacibuGads;
+		grupasDati.Nodala = Ссылка;
+		grupasDati.MacibuProgramma = Grupa.MacibuProgramma;
+		
+		grupasMacProg = Справочники.MacibuProgrammas.НайтиПоНаименованию(Grupa.MacibuProgramma);
+		
+		Для каждого Prieksmets Из grupasMacProg.MacibuPrieksmeti Цикл
+			
+			Если Справочники.Grupas.НайтиПоНаименованию(Grupa.Grupa).MacibuPrieksmeti.Найти(Prieksmets.Nosaukums, "Nosaukums") = Неопределено Тогда
+				
+				Если Prieksmets["Gads" + MacGads] = истина Тогда
+					
+					JaunsPrieksmets = grupasDati.MacibuPrieksmeti.Добавить();
+					JaunsPrieksmets.Nosaukums = Prieksmets.Nosaukums; 
+					
+				КонецЕсли;	
+				
+			КонецЕсли; 	
+			
+		КонецЦикла;
+		
+		grupasDati.Записать();
+		
+	КонецЦикла;
+	
+	Если NodalasVaditajs.NodalaKasVed = Ссылка.Пустая() Тогда
+	
+		Skolotajs = NodalasVaditajs.ПолучитьОбъект();
+		Skolotajs.NodalaKasVed = Ссылка;
+		Skolotajs.Записать();	
+	
+	КонецЕсли; 
+	
+	
+КонецПроцедуры
