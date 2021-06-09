@@ -1,0 +1,588 @@
+&НаКлиенте
+Процедура SkolotajsПриИзменении(Элемент)
+	
+	Элементы.ФормаParādītGrafiku.Видимость = Истина;
+	
+	Если Объект.Datums <> '00010101' Тогда
+	
+		Элементы.Prieksmets.Видимость = Истина;
+		Элементы.StundasNumurs.Видимость = Истина;
+	
+	КонецЕсли; 
+	
+КонецПроцедуры
+
+&НаСервере
+Функция Проверка(Реквизит, число)
+	
+	Если число = 1 Тогда
+	
+		Рекв = Справочники.Skolotaji.ПустаяСсылка();
+	
+	ИначеЕсли число = 2 Тогда
+	
+		Рекв = Справочники.MacibuPrieksmeti.ПустаяСсылка();
+	
+	ИначеЕсли число = 3 Тогда
+	
+		Рекв = Справочники.Grupas.ПустаяСсылка();
+			
+	КонецЕсли; 
+	
+	Если Реквизит <> Рекв Тогда
+	
+		Возврат Истина;	
+	
+	Иначе
+	
+		Возврат Ложь;	
+	
+	КонецЕсли;
+
+КонецФункции // Проверка()
+  
+
+&НаКлиенте
+Процедура DatumsПриИзменении(Элемент)
+	
+	Diena = ДеньНедели(Объект.Datums);
+	
+	Если Diena = 6 ИЛИ Diena = 7 Тогда
+	
+		Сообщение = Новый СообщениеПользователю;
+		Сообщение.Текст = "Mācības netiek veiktas pa brīvdienām!";
+		Сообщение.Поле = "Объект.Datums";
+		Сообщение.Сообщить();
+		
+		Объект.Datums = '00010101';
+		
+	ИначеЕсли Объект.Datums > ТекущаяДата() Тогда
+		
+		Сообщение = Новый СообщениеПользователю;
+		Сообщение.Текст = "Nedrīkst gramatot mācības nākotnē!";
+		Сообщение.Поле = "Объект.Datums";
+		Сообщение.Сообщить();
+		
+		Объект.Datums = '00010101';
+		
+	ИначеЕсли Проверка(Объект.Skolotajs, 1) Тогда
+	
+		Элементы.Prieksmets.Видимость = Истина;
+		Элементы.StundasNumurs.Видимость = Истина;
+	
+	КонецЕсли;	
+		
+КонецПроцедуры
+
+
+&НаКлиенте
+Процедура PrieksmetsПриИзменении(Элемент)
+	
+	Если Объект.StundasNumurs <> 0 И Объект.Datums <> '00010101' И Проверка(Объект.Skolotajs, 1) Тогда
+	
+		Элементы.Grupa.Видимость = Истина;
+	
+	КонецЕсли;
+	
+КонецПроцедуры
+
+
+&НаКлиенте
+Процедура StundasNumursПриИзменении(Элемент)
+	
+	Если Проверка(Объект.Prieksmets, 2) И Объект.Datums <> '00010101' И Проверка(Объект.Skolotajs, 1) Тогда
+	
+		Элементы.Grupa.Видимость = Истина;
+	
+	КонецЕсли;
+	
+КонецПроцедуры
+
+&НаСервере
+Процедура GrupaПриИзмененииНаСервере()
+	
+	IzvlGrupa = Справочники.Grupas.НайтиПоНаименованию(Объект.Grupa).Studenti;
+	Таб = Новый ТаблицаЗначений;
+	Таб.Колонки.Добавить("VardsUzvards");
+	Таб.Колонки.Добавить("Atzime");
+	Таб.Колонки.Добавить("Kavejums");
+	Таб.Колонки.Добавить("AttaisnotaisKavējums");
+	
+	Для каждого Students Из IzvlGrupa Цикл
+	
+		JaunsStudents = Таб.Добавить();
+		JaunsStudents.VardsUzvards = Students.VardsUzvards;	
+		Запрос = Новый Запрос;
+		Запрос.Текст = 
+		"ВЫБРАТЬ
+		|	KavejumuRegistrs.Kavejums КАК Kavejums,
+		|	VērtējumuRegistrs.Vertejums КАК Vertejums
+		|ИЗ
+		|	РегистрСведений.VērtējumuRegistrs КАК VērtējumuRegistrs,
+		|	РегистрСведений.KavejumuRegistrs КАК KavejumuRegistrs
+		|ГДЕ
+		|	KavejumuRegistrs.Datums = &Datums
+		|	И KavejumuRegistrs.Students = &Students
+		|	И KavejumuRegistrs.Prieksmets = &Prieksmets
+		|	И KavejumuRegistrs.StundasNumurs = &StundasNumurs
+		|	И VērtējumuRegistrs.Datums = &Datums
+		|	И VērtējumuRegistrs.Students = &Students
+		|	И VērtējumuRegistrs.Prieksmets = &Prieksmets
+		|	И VērtējumuRegistrs.StundasNumurs = &StundasNumurs";
+		
+		Запрос.УстановитьПараметр("Datums", Объект.Datums);
+		Запрос.УстановитьПараметр("Prieksmets", Объект.Prieksmets);
+		Запрос.УстановитьПараметр("Students", Students.VardsUzvards);
+		Запрос.УстановитьПараметр("StundasNumurs", Объект.StundasNumurs);
+		
+		РезультатЗапроса = Запрос.Выполнить();
+		
+		Если НЕ РезультатЗапроса.Пустой() Тогда
+		
+			ВыборкаДетальныеЗаписи = РезультатЗапроса.Выбрать();
+			ВыборкаДетальныеЗаписи.Следующий();
+			
+				
+	        JaunsStudents.Atzime = ПреобразоватьВОценку(ВыборкаДетальныеЗаписи.Vertejums);
+			
+			Если ВыборкаДетальныеЗаписи.Kavejums = Истина Тогда
+			
+				JaunsStudents.AttaisnotaisKavējums = Истина;
+				JaunsStudents.Kavejums = Ложь;
+				
+			ИначеЕсли ВыборкаДетальныеЗаписи.Kavejums = Ложь Тогда
+				
+				JaunsStudents.AttaisnotaisKavējums = Ложь;
+				JaunsStudents.Kavejums = Истина;
+				
+			Иначе 
+				
+				JaunsStudents.AttaisnotaisKavējums = Ложь;
+				JaunsStudents.Kavejums = Ложь;	
+				
+			КонецЕсли; 
+			
+		Иначе
+			
+			JaunsStudents.Atzime = 0;	
+			JaunsStudents.AttaisnotaisKavējums = Ложь;
+			JaunsStudents.Kavejums = Ложь;
+			
+		КонецЕсли;
+		
+	
+	КонецЦикла;
+	
+	Объект.Studenti.Загрузить(Таб);
+	
+КонецПроцедуры
+
+&НаКлиенте
+Процедура GrupaПриИзменении(Элемент)
+	Элементы.Studenti.Видимость = Истина;
+	Элементы.Temats_MajasDarbs.Видимость = Истина;
+	GrupaПриИзмененииНаСервере();
+КонецПроцедуры
+
+&НаСервере
+Функция ParādītGrafikuНаСервере()
+	
+	Запрос = Новый Запрос;
+	Запрос.Текст = 
+		"ВЫБРАТЬ
+		|	StunduSaraksts.MacibuPrieksmets КАК MacibuPrieksmets,
+		|	StunduSaraksts.KabinetaNumurs КАК KabinetaNumurs,
+		|	StunduSaraksts.StundasNumurs КАК StundasNumurs,
+		|	StunduSaraksts.NedēļasDiena КАК NedēļasDiena,
+		|	StunduSaraksts.Grupa КАК Grupa
+		|ИЗ
+		|	РегистрСведений.StunduSaraksts КАК StunduSaraksts
+		|ГДЕ
+		|	StunduSaraksts.Skolotajs = &Skolotajs
+		|
+		|УПОРЯДОЧИТЬ ПО
+		|	StundasNumurs,
+		|	NedēļasDiena";
+	
+	Запрос.УстановитьПараметр("Skolotajs", Объект.Skolotajs);
+	
+	РезультатЗапроса = Запрос.Выполнить();
+	
+	ВыборкаДетальныеЗаписи = РезультатЗапроса.Выбрать();
+	
+	Таб = Новый ТабличныйДокумент;
+	Таб.ПолеСверху = 3;
+	Таб.ИмяПараметровПечати = "DRUKAS_PARAMETRI_stundu_grafiks_skolotajiem_drukasana";
+	Таб.АвтоМасштаб = Истина;
+	Макет = ПолучитьОбщийМакет("StunduGrafiksSkolotajiem");
+	ОбластьШапка = Макет.ПолучитьОбласть("Шапка");
+	ОбластьУрок = Макет.ПолучитьОбласть("Stunda");
+	
+	ОбластьШапка.Параметры.subjekts = Объект.Skolotajs.Наименование;
+	Таб.Вывести(ОбластьШапка);
+		
+	ОбластьУрок.Параметры.StNr = 0;
+	ОбластьУрок.Параметры.time = "7:45 - 8:25";
+	ТекущийУрок = 0;
+	
+	Очистка = Новый Структура;
+	Очистка.Вставить("Prieksmets1");
+	Очистка.Вставить("Prieksmets2");
+	Очистка.Вставить("Prieksmets3");
+	Очистка.Вставить("Prieksmets4");
+	Очистка.Вставить("Prieksmets5");
+	
+	Очистка.Вставить("Grupa1");
+	Очистка.Вставить("Grupa2");
+	Очистка.Вставить("Grupa3");
+	Очистка.Вставить("Grupa4");
+	Очистка.Вставить("Grupa5");
+	
+	Очистка.Вставить("KabNr1");
+	Очистка.Вставить("KabNr2");
+	Очистка.Вставить("KabNr3");
+	Очистка.Вставить("KabNr4");
+	Очистка.Вставить("KabNr5");
+	
+	Пока ВыборкаДетальныеЗаписи.Следующий() Цикл
+		
+		//Сообщить("" + ВыборкаДетальныеЗаписи.StundasNumurs + ", " + ВыборкаДетальныеЗаписи.NedēļasDiena + ", " +  ВыборкаДетальныеЗаписи.MacibuPrieksmets ); 
+		
+		Пока ТекущийУрок < ВыборкаДетальныеЗаписи.StundasNumurs Цикл
+			
+			ТекущийУрок = ТекущийУрок + 1;
+			Таб.Вывести(ОбластьУрок);
+			ОбластьУрок.Параметры.Заполнить(Очистка);
+			ОбластьУрок.Параметры.StNr = ТекущийУрок;
+			
+			Если ТекущийУрок = 1 Тогда
+				
+				ОбластьУрок.Параметры.time = "8:30 - 9:10";		
+				
+			ИначеЕсли ТекущийУрок = 2 Тогда 
+				
+				ОбластьУрок.Параметры.time = "9:15 - 9:55";
+				
+			ИначеЕсли ТекущийУрок = 3 Тогда 
+				
+				ОбластьУрок.Параметры.time = "10:10 - 10:50";
+				
+			ИначеЕсли ТекущийУрок = 4 Тогда 
+				
+				ОбластьУрок.Параметры.time = "10:55 - 11:35";
+				
+			ИначеЕсли ТекущийУрок = 5 Тогда 
+				
+				ОбластьУрок.Параметры.time = "11:45 - 12:25";
+				
+			ИначеЕсли ТекущийУрок = 6 Тогда 
+				
+				ОбластьУрок.Параметры.time = "12:30 - 13:10";
+				
+			ИначеЕсли ТекущийУрок = 7 Тогда 
+				
+				ОбластьУрок.Параметры.time = "13:20 - 14:00";
+				
+			ИначеЕсли ТекущийУрок = 8 Тогда 
+				
+				ОбластьУрок.Параметры.time = "14:05 - 14:45";
+				
+			ИначеЕсли ТекущийУрок = 9 Тогда 
+				
+				ОбластьУрок.Параметры.time = "14:50 - 15:30";
+				
+			ИначеЕсли ТекущийУрок = 10 Тогда 
+				
+				ОбластьУрок.Параметры.time = "15:35 - 16:15";
+				
+			ИначеЕсли ТекущийУрок = 11 Тогда 
+				
+				ОбластьУрок.Параметры.time = "16:20 - 17:00";
+				
+			ИначеЕсли ТекущийУрок = 12 Тогда 
+				
+				ОбластьУрок.Параметры.time = "17:05 - 17:45";
+				
+			КонецЕсли;	
+			
+		КонецЦикла;  
+		
+		
+		Если ВыборкаДетальныеЗаписи.NedēļasDiena = Перечисления.NedēļasDienas.Pirmdiena Тогда
+			
+			ОбластьУрок.Параметры.Prieksmets1 = ВыборкаДетальныеЗаписи.MacibuPrieksmets;	
+			ОбластьУрок.Параметры.Grupa1 = ВыборкаДетальныеЗаписи.Grupa;
+			ОбластьУрок.Параметры.KabNr1 = "" + ВыборкаДетальныеЗаписи.KabinetaNumurs + ". kab.";
+			
+		ИначеЕсли ВыборкаДетальныеЗаписи.NedēļasDiena = Перечисления.NedēļasDienas.Otrdiena Тогда
+		
+			ОбластьУрок.Параметры.Prieksmets2 = ВыборкаДетальныеЗаписи.MacibuPrieksmets;	
+			ОбластьУрок.Параметры.Grupa2 = ВыборкаДетальныеЗаписи.Grupa;
+			ОбластьУрок.Параметры.KabNr2 = "" + ВыборкаДетальныеЗаписи.KabinetaNumurs + ". kab.";
+			
+		ИначеЕсли ВыборкаДетальныеЗаписи.NedēļasDiena = Перечисления.NedēļasDienas.Tresdiena Тогда
+		
+			ОбластьУрок.Параметры.Prieksmets3 = ВыборкаДетальныеЗаписи.MacibuPrieksmets;	
+			ОбластьУрок.Параметры.Grupa3 = ВыборкаДетальныеЗаписи.Grupa;
+			ОбластьУрок.Параметры.KabNr3 = "" + ВыборкаДетальныеЗаписи.KabinetaNumurs + ". kab.";
+			
+		ИначеЕсли ВыборкаДетальныеЗаписи.NedēļasDiena = Перечисления.NedēļasDienas.Ceturdiena Тогда
+		
+			ОбластьУрок.Параметры.Prieksmets4 = ВыборкаДетальныеЗаписи.MacibuPrieksmets;	
+			ОбластьУрок.Параметры.Grupa4 = ВыборкаДетальныеЗаписи.Grupa;
+			ОбластьУрок.Параметры.KabNr4 = "" + ВыборкаДетальныеЗаписи.KabinetaNumurs + ". kab.";
+			
+		ИначеЕсли ВыборкаДетальныеЗаписи.NedēļasDiena = Перечисления.NedēļasDienas.Piektdiena Тогда
+		
+			ОбластьУрок.Параметры.Prieksmets5 = ВыборкаДетальныеЗаписи.MacibuPrieksmets;	
+			ОбластьУрок.Параметры.Grupa5 = ВыборкаДетальныеЗаписи.Grupa;
+			ОбластьУрок.Параметры.KabNr5 = "" + ВыборкаДетальныеЗаписи.KabinetaNumurs + ". kab.";		
+		
+		КонецЕсли; 
+		
+	КонецЦикла;
+	
+	Таб.Вывести(ОбластьУрок);
+	
+	Возврат Таб;	
+	
+КонецФункции
+
+&НаКлиенте
+Процедура ParādītGrafiku(Команда)
+	ParādītGrafikuНаСервере().Показать("Skolotaja grafiks");
+КонецПроцедуры
+
+&НаСервере
+Процедура ОбработкаПроверкиЗаполненияНаСервере(Отказ, ПроверяемыеРеквизиты)
+	
+	Check = Истина;
+	
+	Если Объект.StundasNumurs > 12 Тогда
+	
+		Сообщить("Nevar but vairak neka 12 stundas diena!");
+		Check = Ложь;
+	
+	КонецЕсли; 
+	
+	Для каждого Students Из Объект.Studenti Цикл
+			
+		Если Students.Kavejums = Истина И Students.AttaisnotaisKavējums = Истина Тогда
+		
+			Сообщить("Students " + Students.VardsUzvards + ": Izvēlaties tikai vienu kavējuma tipu!");
+			Check = Ложь;
+		
+		КонецЕсли; 
+	
+	КонецЦикла;
+	
+	Если НЕ Check Тогда
+	
+		Отказ = Истина;
+		
+	Иначе 
+		
+		
+		NedēļasDiena = ДеньНедели(Объект.Datums);
+		
+		Если NedēļasDiena = 1 Тогда
+		
+			NedēļasDiena = Перечисления.NedēļasDienas.Pirmdiena;	
+		
+		ИначеЕсли NedēļasDiena = 2 Тогда
+		
+			NedēļasDiena = Перечисления.NedēļasDienas.Otrdiena;
+			
+		ИначеЕсли NedēļasDiena = 3 Тогда
+		
+			NedēļasDiena = Перечисления.NedēļasDienas.Tresdiena;
+			
+		ИначеЕсли NedēļasDiena = 4 Тогда
+		
+			NedēļasDiena = Перечисления.NedēļasDienas.Ceturdiena;
+			
+		ИначеЕсли NedēļasDiena = 5 Тогда
+		
+			NedēļasDiena = Перечисления.NedēļasDienas.Piektdiena
+		
+		КонецЕсли;
+		
+		Запрос = Новый Запрос;
+		Запрос.Текст = 
+		"ВЫБРАТЬ
+		|	StunduSaraksts.MacibuPrieksmets КАК MacibuPrieksmets
+		|ИЗ
+		|	РегистрСведений.StunduSaraksts КАК StunduSaraksts
+		|ГДЕ
+		|	StunduSaraksts.NedēļasDiena = &NedēļasDiena
+		|	И StunduSaraksts.StundasNumurs = &StundasNumurs
+		|	И StunduSaraksts.Grupa = &Grupa
+		|	И StunduSaraksts.MacibuPrieksmets = &MacibuPrieksmets
+		|	И StunduSaraksts.Skolotajs = &Skolotajs";
+		
+		Запрос.УстановитьПараметр("Grupa", Объект.Grupa);
+		Запрос.УстановитьПараметр("MacibuPrieksmets", Объект.Prieksmets);
+		Запрос.УстановитьПараметр("NedēļasDiena", NedēļasDiena);
+		Запрос.УстановитьПараметр("Skolotajs", Объект.Skolotajs);
+		Запрос.УстановитьПараметр("StundasNumurs", Объект.StundasNumurs);
+		
+		РезультатЗапроса = Запрос.Выполнить();
+		
+		Если РезультатЗапроса.Пустой() Тогда
+		
+			Сообщить("Stundas ar tādiem parametriem nav datu bāzē! " +
+			"Uzspiediet 'Parādīt grafiku' lai redzēt sarakstu");
+			
+			Отказ = Истина;
+		
+		КонецЕсли; 
+	
+	КонецЕсли;
+	
+	
+КонецПроцедуры
+
+&НаСервере
+Функция ПреобразоватьВОценку(Значение)
+
+	Если Значение = 0 Тогда
+		
+		Возврат Перечисления.Atzimes.NV;	
+		
+	ИначеЕсли Значение = 1 Тогда
+		
+		Возврат Перечисления.Atzimes.Viens;
+		
+	ИначеЕсли Значение = 2 Тогда
+		
+		Возврат Перечисления.Atzimes.Divi;
+		
+	ИначеЕсли Значение = 3 Тогда
+		
+		Возврат Перечисления.Atzimes.Tris;
+		
+	ИначеЕсли Значение = 4 Тогда
+		
+		Возврат Перечисления.Atzimes.Četri
+		
+	ИначеЕсли Значение = 5 Тогда
+		
+		Возврат Перечисления.Atzimes.Pieci;
+		
+	ИначеЕсли Значение = 6 Тогда
+		
+		Возврат Перечисления.Atzimes.Seši;
+		
+	ИначеЕсли Значение = 7 Тогда
+		
+		Возврат Перечисления.Atzimes.Septiņi;
+		
+	ИначеЕсли Значение = 8 Тогда
+		
+		Возврат Перечисления.Atzimes.Astoņi;
+		
+	ИначеЕсли Значение = 9 Тогда
+		
+		Возврат Перечисления.Atzimes.Deviņi;
+		
+	ИначеЕсли Значение = 10 Тогда
+		
+		Возврат Перечисления.Atzimes.Desmit;
+		
+	КонецЕсли;
+
+КонецФункции
+
+&НаСервере
+Процедура AtjaunotНаСервере()
+	
+	IzvlGrupa = Справочники.Grupas.НайтиПоНаименованию(Объект.Grupa).Studenti;
+	Таб = Новый ТаблицаЗначений;
+	Таб.Колонки.Добавить("VardsUzvards");
+	Таб.Колонки.Добавить("Atzime");
+	Таб.Колонки.Добавить("Kavejums");
+	Таб.Колонки.Добавить("AttaisnotaisKavējums");
+	
+	Для каждого Students Из IzvlGrupa Цикл
+	
+		JaunsStudents = Таб.Добавить();
+		JaunsStudents.VardsUzvards = Students.VardsUzvards;	
+		Запрос = Новый Запрос;
+		Запрос.Текст = 
+		"ВЫБРАТЬ
+		|	KavejumuRegistrs.Kavejums КАК Kavejums,
+		|	VērtējumuRegistrs.Vertejums КАК Vertejums
+		|ИЗ
+		|	РегистрСведений.VērtējumuRegistrs КАК VērtējumuRegistrs,
+		|	РегистрСведений.KavejumuRegistrs КАК KavejumuRegistrs
+		|ГДЕ
+		|	KavejumuRegistrs.Datums = &Datums
+		|	И KavejumuRegistrs.Students = &Students
+		|	И KavejumuRegistrs.Prieksmets = &Prieksmets
+		|	И KavejumuRegistrs.StundasNumurs = &StundasNumurs
+		|	И VērtējumuRegistrs.Datums = &Datums
+		|	И VērtējumuRegistrs.Students = &Students
+		|	И VērtējumuRegistrs.Prieksmets = &Prieksmets
+		|	И VērtējumuRegistrs.StundasNumurs = &StundasNumurs";
+		
+		Запрос.УстановитьПараметр("Datums", Объект.Datums);
+		Запрос.УстановитьПараметр("Prieksmets", Объект.Prieksmets);
+		Запрос.УстановитьПараметр("Students", Students.VardsUzvards);
+		Запрос.УстановитьПараметр("StundasNumurs", Объект.StundasNumurs);
+		
+		РезультатЗапроса = Запрос.Выполнить();
+		
+		Если НЕ РезультатЗапроса.Пустой() Тогда
+		
+			ВыборкаДетальныеЗаписи = РезультатЗапроса.Выбрать();
+			ВыборкаДетальныеЗаписи.Следующий();
+			
+				
+	        JaunsStudents.Atzime = ПреобразоватьВОценку(ВыборкаДетальныеЗаписи.Vertejums);
+			
+			Если ВыборкаДетальныеЗаписи.Kavejums = Истина Тогда
+			
+				JaunsStudents.AttaisnotaisKavējums = Истина;
+				JaunsStudents.Kavejums = Ложь;
+				
+			ИначеЕсли ВыборкаДетальныеЗаписи.Kavejums = Ложь Тогда
+				
+				JaunsStudents.AttaisnotaisKavējums = Ложь;
+				JaunsStudents.Kavejums = Истина;
+				
+			Иначе 
+				
+				JaunsStudents.AttaisnotaisKavējums = Ложь;
+				JaunsStudents.Kavejums = Ложь;	
+				
+			КонецЕсли; 
+			
+		Иначе
+			
+			JaunsStudents.Atzime = 0;	
+			JaunsStudents.AttaisnotaisKavējums = Ложь;
+			JaunsStudents.Kavejums = Ложь;
+			
+		КонецЕсли;
+		
+	
+	КонецЦикла;
+	
+	Объект.Studenti.Загрузить(Таб);
+	
+КонецПроцедуры
+
+&НаКлиенте
+Процедура Atjaunot(Команда)
+	AtjaunotНаСервере();
+КонецПроцедуры
+
+Если Проверка(Объект.Prieksmets, 2) И Объект.Datums <> '00010101' И Проверка(Объект.Skolotajs, 1) И Объект.StundasNumurs <> 0 И Проверка(Объект.Grupa, 3) Тогда
+
+	Элементы.Prieksmets.Видимость = Истина;
+	Элементы.StundasNumurs.Видимость = Истина;
+	Элементы.Grupa.Видимость = Истина;
+	Элементы.Studenti.Видимость = Истина;
+	Элементы.Temats_MajasDarbs.Видимость = Истина;
+
+КонецЕсли;
