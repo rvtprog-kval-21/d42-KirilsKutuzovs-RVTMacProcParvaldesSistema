@@ -1,1 +1,83 @@
-
+Процедура ОбработкаПроведения(Отказ, РежимПроведения)
+		
+	Запрос = Новый Запрос;
+	Запрос.Текст = 
+		"ВЫБРАТЬ
+		|	StunduSaraksts.NedēļasDiena КАК NedēļasDiena,
+		|	StunduSaraksts.StundasNumurs КАК StundasNumurs,
+		|	StunduSaraksts.Grupa КАК Grupa,
+		|	StunduSaraksts.Skolotajs КАК Skolotajs,
+		|	StunduSaraksts.KabinetaNumurs КАК KabinetaNumurs,
+		|	StunduSaraksts.MacibuPrieksmets КАК MacibuPrieksmets
+		|ИЗ
+		|	РегистрСведений.StunduSaraksts КАК StunduSaraksts";
+	
+	РезультатЗапроса = Запрос.Выполнить();
+	
+	ВыборкаДетальныеЗаписи = РезультатЗапроса.Выбрать();
+	
+	check = True;
+		
+	Для индекс = 0 По 12 Цикл
+		
+		ПроверяемыйУчитель = "Skolotajs" + индекс;      
+		ПроверяемыйКабинет = "KabinetaNumurs" + индекс;
+		
+		ВыборкаДетальныеЗаписи.Сбросить();
+		Пока ВыборкаДетальныеЗаписи.Следующий() Цикл
+			
+			Если ВыборкаДетальныеЗаписи.NedēļasDiena = ЭтотОбъект.NedēļasDiena И ВыборкаДетальныеЗаписи.StundasNumurs = индекс И ВыборкаДетальныеЗаписи.Grupa <> ЭтотОбъект.Grupa Тогда
+				
+				Если ВыборкаДетальныеЗаписи.Skolotajs = ЭтотОбъект[ПроверяемыйУчитель] Тогда
+					
+					check = False;
+					Сообщить("" + индекс + ".stunda: Skolotajs(-a) " + ЭтотОбъект[ПроверяемыйУчитель].Наименование + " ved stundu '" + ВыборкаДетальныеЗаписи.MacibuPrieksmets + "' grupai " + ВыборкаДетальныеЗаписи.Grupa + "!");
+					
+				КонецЕсли;
+					
+				Если ВыборкаДетальныеЗаписи.KabinetaNumurs = ЭтотОбъект[ПроверяемыйКабинет] Тогда
+					
+					check = False;
+					Сообщить("" + индекс + ".stunda: Kabinets " + ВыборкаДетальныеЗаписи.KabinetaNumurs + " jau aizņemts grupai " + ВыборкаДетальныеЗаписи.Grupa + " kur bus stunda '" + ВыборкаДетальныеЗаписи.MacibuPrieksmets + "'!");		
+					
+				КонецЕсли; 	
+				
+			КонецЕсли;
+						
+		КонецЦикла;
+		
+	КонецЦикла;
+	
+	Если check Тогда
+	
+		Для индекс = 0 По 12 Цикл
+						
+			УчебныйПредмет = "MacibuPrieksmets" + индекс;
+			Учитель = "Skolotajs" + индекс;
+			КабНР = "KabinetaNumurs" + индекс;
+			
+			Если ЭтотОбъект[УчебныйПредмет] <> Справочники.MacibuPrieksmeti.ПустаяСсылка() Тогда
+				
+				Запись = РегистрыСведений.StunduSaraksts.СоздатьМенеджерЗаписи();
+			
+				Запись.NedēļasDiena = NedēļasDiena;
+				Запись.StundasNumurs = индекс;
+				Запись.Grupa = Grupa;
+				
+				Запись.MacibuPrieksmets = ЭтотОбъект[УчебныйПредмет];
+				Запись.Skolotajs = ЭтотОбъект[Учитель];
+				Запись.KabinetaNumurs = ЭтотОбъект[КабНР];
+				Запись.Записать();	
+			
+			КонецЕсли; 
+				
+		
+		КонецЦикла;  	
+	
+	Иначе
+	
+		Отказ = Истина;	
+	
+	КонецЕсли; 
+	
+КонецПроцедуры
